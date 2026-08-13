@@ -1,6 +1,44 @@
+# --- secrets: never commit ---
+.env
+.env.*
+!.env.example
+
+# --- virtualenvs ---
 venv/
+.venv/
+env/
+ENV/
+
+# --- python ---
 __pycache__/
 *.py[cod]
-.env
+*$py.class
+*.so
+.Python
+build/
+dist/
+*.egg-info/
+.eggs/
+
+# --- tooling caches ---
 .pytest_cache/
 .ruff_cache/
+.mypy_cache/
+.coverage
+.coverage.*
+htmlcov/
+coverage.xml
+
+# --- logs / local db ---
+*.log
+logs/
+*.sqlite3
+*.db
+
+# --- editors / OS ---
+.idea/
+.vscode/
+*.swp
+.DS_Store
+Thumbs.db
+desktop.ini

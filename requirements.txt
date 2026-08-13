@@ -1,15 +1,23 @@
 # Python 3.11 — install with:  venv\Scripts\pip install -r requirements.txt
-# Versions below are the exact ones resolved and installed on CPython 3.11.9.
+# Exact versions resolved and installed on CPython 3.11.9.
 
 # --- core API ---
 fastapi==0.141.1
 uvicorn[standard]==0.52.2
 
-# --- config / env ---
+# --- config / env (12-factor: env vars only) ---
+pydantic==2.13.4
 pydantic-settings==2.15.0
 python-dotenv==1.2.2
 
-# --- http client (also used by the test client) ---
+# --- database (Neon Postgres 18 over psycopg3, sync + async) ---
+# Schema changes are plain .sql files in migrations/, applied by
+# `python scripts/migrate.py`. No Alembic.
+SQLAlchemy==2.0.52
+psycopg[binary]==3.3.4
+greenlet==3.5.5
+
+# --- http client (also backs the FastAPI test client) ---
 httpx==0.28.1
 
 # --- dev / test ---

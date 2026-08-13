@@ -1,0 +1,74 @@
+name: CI
+
+# main only, exactly as requested.
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  quality:
+    name: Lint & test (Python 3.11)
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python 3.11
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+          cache-dependency-path: requirements.txt
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Ruff (lint)
+        run: ruff check .
+
+      - name: Ruff (format check)
+        run: ruff format --check .
+
+      - name: Pytest
+        # Placeholder values only — the suite never touches a real database.
+        env:
+          ENVIRONMENT: development
+          SECRET_KEY: ci-secret-key-not-used-outside-ci
+          DATABASE_URL: postgresql://ci:ci@localhost:5432/ci?sslmode=disable
+        run: pytest
+
+  deploy:
+    name: Trigger Render deploy
+    needs: quality
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+
+    steps:
+      # Optional. If Render's own GitHub auto-deploy is on (autoDeploy: true in
+      # render.yaml), this step is redundant and stays skipped unless you add a
+      # RENDER_DEPLOY_HOOK_URL secret.
+      # The secrets context cannot be read in an `if:`, so the check happens in
+      # the script — the job succeeds either way.
+      - name: Call Render deploy hook
+        env:
+          HOOK_URL: ${{ secrets.RENDER_DEPLOY_HOOK_URL }}
+        run: |
+          if [ -z "$HOOK_URL" ]; then
+            echo "RENDER_DEPLOY_HOOK_URL not set - relying on Render auto-deploy."
+            exit 0
+          fi
+          curl -fsSL -X POST "$HOOK_URL"

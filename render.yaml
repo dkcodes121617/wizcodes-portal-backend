@@ -1,0 +1,45 @@
+# Render Blueprint — https://render.com/docs/blueprint-spec
+#
+# Render can create the service from this file (New -> Blueprint), or you can
+# create a Web Service by hand with the same values. Either way the deploy
+# branch is main and nothing else.
+#
+# The app detects Render automatically (RENDER=true is injected), so it switches
+# itself to production: DEBUG off, reload off, keep-alive on. Only the values
+# that genuinely differ per environment are listed here.
+#
+# `sync: false` means "prompt me in the dashboard, do not store it in git".
+
+services:
+  - type: web
+    name: wizcodes-portal-backend
+    runtime: python
+    plan: free
+    region: ohio # us-east-2, matching the Neon project's region
+    branch: main # deploy from main only
+    autoDeploy: true # every push to main redeploys
+    rootDir: .
+    buildCommand: pip install --upgrade pip && pip install -r requirements.txt
+    # Render injects PORT; main.py binds 0.0.0.0 on it.
+    startCommand: python main.py
+    healthCheckPath: /health
+
+    envVars:
+      - key: PYTHON_VERSION
+        value: "3.11.9"
+
+      # Render generates a strong value on first deploy and keeps it stable.
+      - key: SECRET_KEY
+        generateValue: true
+
+      # Set these in the dashboard — they differ per environment.
+      - key: DATABASE_URL
+        sync: false # paste the Neon connection string
+      - key: FRONTEND_URL
+        sync: false # https://<your-app>.vercel.app
+
+      # Optional overrides; the detected defaults are already correct.
+      # - key: LOG_LEVEL
+      #   value: INFO
+      # - key: ENABLE_DOCS
+      #   value: "false"

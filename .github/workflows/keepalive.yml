@@ -1,0 +1,40 @@
+name: Keep-alive
+
+# Render's free tier sleeps after ~15 minutes without inbound traffic, and the
+# cold start costs ~50s. The app self-pings every 14 minutes while it is awake;
+# this cron is the outside backup that can also WAKE a service that already
+# went to sleep (a sleeping app cannot ping itself).
+#
+# Setup: repo -> Settings -> Secrets and variables -> Actions -> Variables ->
+#   New repository variable:  BACKEND_URL = https://<your-service>.onrender.com
+#
+# Note: GitHub disables scheduled workflows in repos with no activity for 60
+# days. Re-enable from the Actions tab if that happens.
+
+on:
+  schedule:
+    - cron: "*/14 * * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  ping:
+    name: Ping backend
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+
+    steps:
+      - name: Ping /keepalive
+        env:
+          BACKEND_URL: ${{ vars.BACKEND_URL }}
+        run: |
+          if [ -z "$BACKEND_URL" ]; then
+            echo "BACKEND_URL repository variable is not set - skipping."
+            exit 0
+          fi
+          # --max-time 90 tolerates a cold start; retries cover a slow wake-up.
+          curl -fsS --max-time 90 --retry 3 --retry-delay 20 --retry-all-errors \
+            "${BACKEND_URL%/}/keepalive"
+          echo ""
