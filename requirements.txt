@@ -1,0 +1,18 @@
+# Python 3.11 — install with:  venv\Scripts\pip install -r requirements.txt
+# Versions below are the exact ones resolved and installed on CPython 3.11.9.
+
+# --- core API ---
+fastapi==0.141.1
+uvicorn[standard]==0.52.2
+
+# --- config / env ---
+pydantic-settings==2.15.0
+python-dotenv==1.2.2
+
+# --- http client (also used by the test client) ---
+httpx==0.28.1
+
+# --- dev / test ---
+pytest==9.1.1
+pytest-asyncio==1.4.0
+ruff==0.16.3
