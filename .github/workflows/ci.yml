@@ -44,8 +44,9 @@ jobs:
 
       - name: Pytest
         # Placeholder values only — the suite never touches a real database.
+        # ENVIRONMENT is deliberately absent: the app detects it, and setting it
+        # here would override the detection the config tests assert on.
         env:
-          ENVIRONMENT: development
           SECRET_KEY: ci-secret-key-not-used-outside-ci
           DATABASE_URL: postgresql://ci:ci@localhost:5432/ci?sslmode=disable
         run: pytest
