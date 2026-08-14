@@ -28,21 +28,43 @@ from pydantic_settings import BaseSettings, SettingsConfigDict
 
 Environment = Literal["development", "staging", "production"]
 
+# Deployed URLs. Public endpoints, not secrets, so hardcoding them is safe.
+# They are only fallbacks — an explicit environment variable always wins.
+PRODUCTION_BACKEND_URL = "https://wizcodes-portal-backend.onrender.com"
+PRODUCTION_FRONTEND_URL = "https://wizcodes-portal-frontend.vercel.app"
+LOCAL_FRONTEND_URL = "http://localhost:3000"
 
-def detect_environment() -> Environment:
-    """Infer the environment from the host platform.
+
+def on_render() -> bool:
+    """True when running as a Render service.
 
     Render injects RENDER=true and RENDER_SERVICE_ID into every service, so a
     deployed process identifies itself without anyone remembering to set a flag.
     """
-    if os.getenv("RENDER") or os.getenv("RENDER_SERVICE_ID"):
-        return "production"
-    return "development"
+    return bool(os.getenv("RENDER") or os.getenv("RENDER_SERVICE_ID"))
+
+
+def detect_environment() -> Environment:
+    """Infer the environment from the host platform."""
+    return "production" if on_render() else "development"
+
+
+def detect_frontend_url() -> str:
+    """The Vercel deployment in production, the local dev server otherwise."""
+    return PRODUCTION_FRONTEND_URL if on_render() else LOCAL_FRONTEND_URL
 
 
 def detect_public_base_url() -> str:
-    """Render publishes the service's own external URL; used for keep-alive."""
-    return (os.getenv("RENDER_EXTERNAL_URL") or "").rstrip("/")
+    """This service's own public URL, used as the keep-alive ping target.
+
+    Render publishes RENDER_EXTERNAL_URL per service, which is authoritative and
+    stays correct if the service is ever renamed. The constant is the fallback
+    for the case where it is somehow absent.
+    """
+    external = (os.getenv("RENDER_EXTERNAL_URL") or "").rstrip("/")
+    if external:
+        return external
+    return PRODUCTION_BACKEND_URL if on_render() else ""
 
 
 class Settings(BaseSettings):
@@ -81,8 +103,9 @@ class Settings(BaseSettings):
 
     # --- the single frontend <-> backend link ---
     # Frontend reads NEXT_PUBLIC_API_URL; backend reads FRONTEND_URL. Both name
-    # the same connection. Informational here, since CORS is already wildcard.
-    FRONTEND_URL: str = "http://localhost:3000"
+    # the same connection. Auto-detected: the Vercel URL on Render, localhost
+    # otherwise. Informational here, since CORS is already wildcard.
+    FRONTEND_URL: str = Field(default_factory=detect_frontend_url)
 
     # --- keep-alive (Render free tier sleeps after ~15 min idle) ---
     KEEPALIVE_ENABLED: bool = True

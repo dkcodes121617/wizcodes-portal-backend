@@ -45,17 +45,19 @@ You need:
 
 Scroll to **Environment Variables** and add these three:
 
-| Key            | Value                                                        |
-| -------------- | ------------------------------------------------------------ |
-| `DATABASE_URL` | your full Neon connection string, including `?sslmode=require` |
-| `SECRET_KEY`   | click **Generate** (Render creates a strong random value)     |
-| `PYTHON_VERSION` | `3.11.9`                                                    |
+| Key              | Value                                                          |
+| ---------------- | -------------------------------------------------------------- |
+| `DATABASE_URL`   | your full Neon connection string, including `?sslmode=require`  |
+| `SECRET_KEY`     | click **Generate** (Render creates a strong random value)       |
+| `PYTHON_VERSION` | `3.11.9`                                                        |
 
 That is all. **Do not set** `PORT`, `ENVIRONMENT`, `DEBUG`, or `RELOAD` —
 Render injects `PORT`, and the app detects that it is running on Render and
 switches itself to production mode.
 
-`FRONTEND_URL` gets added in step 5, once Vercel has given you a URL.
+`FRONTEND_URL` also needs no setting: on Render it resolves to
+`https://wizcodes-portal-frontend.vercel.app` automatically. Set it only if you
+move the frontend to a custom domain.
 
 ---
 
@@ -96,14 +98,15 @@ check it in the Render dashboard. The response includes the reason.
 
 ## 5. After the frontend is live
 
-Once Vercel gives you a frontend URL, come back and add one more variable:
+Nothing to do — `FRONTEND_URL` already resolves to
+`https://wizcodes-portal-frontend.vercel.app` on Render, and CORS is `*` so the
+frontend works regardless.
 
-| Key            | Value                                        |
-| -------------- | -------------------------------------------- |
-| `FRONTEND_URL` | `https://wizcodes-portal-frontend.vercel.app` |
+Only if you move to a custom domain, add:
 
-Saving it triggers a redeploy. CORS is already `*`, so this is informational —
-the frontend will work even before you set it.
+| Key            | Value                          |
+| -------------- | ------------------------------ |
+| `FRONTEND_URL` | `https://portal.wizcodes.com`  |
 
 ---
 

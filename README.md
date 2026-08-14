@@ -44,13 +44,15 @@ The server starts on <http://localhost:8000> and auto-reloads on save.
 
 The app **detects where it is running**:
 
-|                | Local machine     | Render (production)      |
-| -------------- | ----------------- | ------------------------ |
-| `ENVIRONMENT`  | `development`     | `production` (auto)      |
-| `DEBUG`        | on                | off                      |
-| Auto-reload    | on                | off                      |
-| Keep-alive ping| off               | on                       |
-| `SECRET_KEY`   | auto-generated    | required, set on Render  |
+|                 | Local machine            | Render (production)                             |
+| --------------- | ------------------------ | ----------------------------------------------- |
+| `ENVIRONMENT`   | `development`            | `production` (auto)                             |
+| `DEBUG`         | on                       | off                                             |
+| Auto-reload     | on                       | off                                             |
+| Keep-alive ping | off                      | on                                              |
+| `SECRET_KEY`    | auto-generated           | required, set on Render                         |
+| `FRONTEND_URL`  | `http://localhost:3000`  | `https://wizcodes-portal-frontend.vercel.app`   |
+| `PUBLIC_BASE_URL` | *(unused)*             | `RENDER_EXTERNAL_URL`, else the deployed URL    |
 
 You do not flip any of these by hand. Render injects `RENDER=true` into every
 service, and the app reads that. If you *want* to override something, uncomment

@@ -32,11 +32,14 @@ services:
       - key: SECRET_KEY
         generateValue: true
 
-      # Set these in the dashboard — they differ per environment.
+      # The only value you must supply in the dashboard.
       - key: DATABASE_URL
         sync: false # paste the Neon connection string
-      - key: FRONTEND_URL
-        sync: false # https://<your-app>.vercel.app
+
+      # FRONTEND_URL is auto-detected as https://wizcodes-portal-frontend.vercel.app
+      # on Render. Set it only if you move to a custom domain.
+      # - key: FRONTEND_URL
+      #   sync: false
 
       # Optional overrides; the detected defaults are already correct.
       # - key: LOG_LEVEL

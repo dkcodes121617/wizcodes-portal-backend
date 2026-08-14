@@ -9,7 +9,13 @@ from __future__ import annotations
 import pytest
 from pydantic import ValidationError
 
-from app.core.config import Settings, detect_environment
+from app.core.config import (
+    LOCAL_FRONTEND_URL,
+    PRODUCTION_BACKEND_URL,
+    PRODUCTION_FRONTEND_URL,
+    Settings,
+    detect_environment,
+)
 
 
 @pytest.fixture(autouse=True)
@@ -89,3 +95,35 @@ def test_keepalive_activates_on_render(monkeypatch: pytest.MonkeyPatch) -> None:
     assert settings.keepalive_active is True
     # Trailing slash stripped so path joins never double up.
     assert settings.PUBLIC_BASE_URL == "https://example.onrender.com"
+
+
+def test_render_external_url_wins_over_the_constant(monkeypatch: pytest.MonkeyPatch) -> None:
+    """A renamed service must keep pinging itself, not the hardcoded default."""
+    monkeypatch.setenv("RENDER", "true")
+    monkeypatch.setenv("RENDER_EXTERNAL_URL", "https://renamed.onrender.com")
+
+    assert Settings().PUBLIC_BASE_URL == "https://renamed.onrender.com"
+
+
+def test_keepalive_falls_back_to_the_known_url(monkeypatch: pytest.MonkeyPatch) -> None:
+    """On Render without RENDER_EXTERNAL_URL, the deployed URL is assumed."""
+    monkeypatch.setenv("RENDER", "true")
+    settings = Settings()
+
+    assert settings.PUBLIC_BASE_URL == PRODUCTION_BACKEND_URL
+    assert settings.keepalive_active is True
+
+
+def test_frontend_url_follows_the_environment(monkeypatch: pytest.MonkeyPatch) -> None:
+    assert Settings().FRONTEND_URL == LOCAL_FRONTEND_URL
+
+    monkeypatch.setenv("RENDER", "true")
+    assert Settings().FRONTEND_URL == PRODUCTION_FRONTEND_URL
+
+
+def test_explicit_frontend_url_wins(monkeypatch: pytest.MonkeyPatch) -> None:
+    monkeypatch.setenv("RENDER", "true")
+    monkeypatch.setenv("FRONTEND_URL", "https://portal.wizcodes.com/")
+
+    # Explicit value used, trailing slash stripped.
+    assert Settings().FRONTEND_URL == "https://portal.wizcodes.com"
