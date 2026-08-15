@@ -48,13 +48,20 @@ def _b64url_decode(value: str) -> bytes:
     return base64.urlsafe_b64decode(value + "=" * (-len(value) % 4))
 
 
-def create_access_token(subject: str, expires_in_minutes: int | None = None) -> str:
+def create_access_token(
+    subject: str,
+    *,
+    role: str | None = None,
+    expires_in_minutes: int | None = None,
+) -> str:
     """Minimal HS256 JWT."""
     settings = get_settings()
     ttl = expires_in_minutes or settings.ACCESS_TOKEN_EXPIRE_MINUTES
     now = int(time.time())
     header = {"alg": "HS256", "typ": "JWT"}
-    payload = {"sub": subject, "iat": now, "exp": now + ttl * 60}
+    payload: dict[str, Any] = {"sub": subject, "iat": now, "exp": now + ttl * 60}
+    if role is not None:
+        payload["role"] = role
 
     segments = [
         _b64url(json.dumps(header, separators=(",", ":")).encode()),
