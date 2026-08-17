@@ -1,6 +1,6 @@
 -- 0002_students.sql
 -- Student accounts for signup/login. Enrollment fields come in a later migration.
-
+-- This migration creates the students table with the following fields:
 CREATE TABLE IF NOT EXISTS students (
     id            UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     name          VARCHAR(255) NOT NULL,
