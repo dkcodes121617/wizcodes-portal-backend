@@ -59,3 +59,13 @@ async def get_current_student(
         )
 
     return student
+
+
+async def get_current_admin_placeholder() -> None:
+    """Placeholder admin guard until real admin auth is built (checklist A13).
+
+    TODO: replace with real admin auth (see build checklist A13). When that
+    lands, swap this function for ``get_current_admin`` and every admin route
+    that depends on it will be protected automatically.
+    """
+    return None
