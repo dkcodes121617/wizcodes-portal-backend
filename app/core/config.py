@@ -119,6 +119,10 @@ class Settings(BaseSettings):
     DB_POOL_RECYCLE_SECONDS: int = 300  # Neon drops idle connections
     DB_ECHO: bool = False
 
+    # --- local file uploads (payment screenshots; swap internals for S3 later) ---
+    PAYMENT_SCREENSHOT_UPLOAD_DIR: str = "uploads/payment-screenshots"
+    PAYMENT_SCREENSHOT_MAX_BYTES: int = 10 * 1024 * 1024  # 10 MB
+
     # ------------------------------------------------------------------
     # validation
     # ------------------------------------------------------------------

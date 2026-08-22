@@ -9,7 +9,7 @@ from sqlalchemy import select
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.core.deps import get_current_admin_placeholder
+from app.core.deps import get_current_admin
 from app.db.session import get_session
 from app.models.internship_plan import InternshipPlan
 from app.schemas.internship_plan import (
@@ -21,7 +21,7 @@ from app.schemas.internship_plan import (
 admin_router = APIRouter(
     prefix="/admin/internship-plans",
     tags=["admin-internship-plans"],
-    dependencies=[Depends(get_current_admin_placeholder)],
+    dependencies=[Depends(get_current_admin)],
 )
 public_router = APIRouter(prefix="/internship-plans", tags=["internship-plans"])
 

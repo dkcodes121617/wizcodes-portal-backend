@@ -4,6 +4,7 @@
 # --- core API ---
 fastapi==0.141.1
 uvicorn[standard]==0.52.2
+python-multipart==0.0.20
 
 # --- config / env (12-factor: env vars only) ---
 pydantic==2.13.4

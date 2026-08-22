@@ -35,6 +35,9 @@ logs/
 *.sqlite3
 *.db
 
+# --- uploaded files (local dev storage) ---
+uploads/
+
 # --- editors / OS ---
 .idea/
 .vscode/

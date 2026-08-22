@@ -12,10 +12,10 @@ from app.db.session import get_session
 from app.models.student import Student
 from app.schemas.auth import (
     StudentLoginRequest,
-    StudentResponse,
     StudentSignupRequest,
     TokenResponse,
 )
+from app.schemas.student import StudentResponse
 
 router = APIRouter(prefix="/auth/student", tags=["auth"])
 

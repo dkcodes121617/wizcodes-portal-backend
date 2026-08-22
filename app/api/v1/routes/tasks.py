@@ -9,7 +9,7 @@ from sqlalchemy import select, text
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.core.deps import get_current_admin_placeholder
+from app.core.deps import get_current_admin
 from app.db.session import get_session
 from app.models.internship_plan import InternshipPlan
 from app.models.task import Task
@@ -18,7 +18,7 @@ from app.schemas.task import TaskCreateRequest, TaskResponse, TaskUpdateRequest
 router = APIRouter(
     prefix="/admin/tasks",
     tags=["admin-tasks"],
-    dependencies=[Depends(get_current_admin_placeholder)],
+    dependencies=[Depends(get_current_admin)],
 )
 
 

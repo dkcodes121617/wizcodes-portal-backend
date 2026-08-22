@@ -3,11 +3,9 @@
 from __future__ import annotations
 
 import re
-from datetime import datetime
 from typing import Literal
-from uuid import UUID
 
-from pydantic import BaseModel, ConfigDict, Field, field_validator, model_validator
+from pydantic import BaseModel, Field, field_validator, model_validator
 
 _EMAIL_RE = re.compile(r"^[^@\s]+@[^@\s]+\.[^@\s]+$")
 _PHONE_RE = re.compile(r"^\+?[\d\s\-()]{5,31}$")
@@ -75,17 +73,6 @@ class StudentLoginRequest(BaseModel):
         if "@" in self.identifier:
             return None
         return _normalize_phone(self.identifier)
-
-
-class StudentResponse(BaseModel):
-    model_config = ConfigDict(from_attributes=True)
-
-    id: UUID
-    name: str
-    email: str | None
-    phone: str | None
-    created_at: datetime
-    updated_at: datetime
 
 
 class TokenResponse(BaseModel):
