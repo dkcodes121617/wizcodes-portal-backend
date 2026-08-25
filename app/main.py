@@ -19,6 +19,7 @@ from app.core.config import Settings, get_settings
 from app.core.logging import configure_logging
 from app.core.middleware import RequestContextMiddleware, SecurityHeadersMiddleware
 from app.db.session import dispose_engine
+from app.services.admin_bootstrap import bootstrap_admin_from_env
 
 logger = logging.getLogger("app")
 
@@ -33,6 +34,8 @@ async def lifespan(app: FastAPI) -> AsyncIterator[None]:
         settings.HOST,
         settings.PORT,
     )
+
+    await bootstrap_admin_from_env(settings)
 
     # Prevents the Render free tier from idling out. No-op off Render.
     keepalive_task = keepalive.start(settings)

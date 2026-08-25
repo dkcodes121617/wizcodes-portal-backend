@@ -123,6 +123,11 @@ class Settings(BaseSettings):
     PAYMENT_SCREENSHOT_UPLOAD_DIR: str = "uploads/payment-screenshots"
     PAYMENT_SCREENSHOT_MAX_BYTES: int = 10 * 1024 * 1024  # 10 MB
 
+    # --- bootstrap admin (login email + password; synced on startup) ---
+    ADMIN_NAME: str = "Admin"
+    ADMIN_EMAIL: str | None = None
+    ADMIN_PASSWORD: str | None = None
+
     # ------------------------------------------------------------------
     # validation
     # ------------------------------------------------------------------
@@ -177,6 +182,11 @@ class Settings(BaseSettings):
                 "SECRET_KEY must be set explicitly in production. Without it a "
                 "fresh key is generated on every restart, invalidating all "
                 "previously issued tokens."
+            )
+        if not self.ADMIN_EMAIL or not self.ADMIN_PASSWORD:
+            raise ValueError(
+                "ADMIN_EMAIL and ADMIN_PASSWORD must be set in production so the "
+                "admin portal can log in."
             )
         return self
 

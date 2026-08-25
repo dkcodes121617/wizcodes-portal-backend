@@ -43,13 +43,16 @@ You need:
 
 ## 2. Environment variables
 
-Scroll to **Environment Variables** and add these three:
+Scroll to **Environment Variables** and add these:
 
 | Key              | Value                                                          |
 | ---------------- | -------------------------------------------------------------- |
 | `DATABASE_URL`   | your full Neon connection string, including `?sslmode=require`  |
 | `SECRET_KEY`     | click **Generate** (Render creates a strong random value)       |
 | `PYTHON_VERSION` | `3.11.9`                                                        |
+| `ADMIN_EMAIL`    | the email you will use at `/admin/login` (e.g. `admin@wizcodes.com`) |
+| `ADMIN_PASSWORD` | a strong password (min 8 characters)                              |
+| `ADMIN_NAME`     | *(optional)* display name, defaults to `Admin`                  |
 
 That is all. **Do not set** `PORT`, `ENVIRONMENT`, `DEBUG`, or `RELOAD` —
 Render injects `PORT`, and the app detects that it is running on Render and
