@@ -44,12 +44,10 @@ class NotificationSendRequest(BaseModel):
         if not self.body:
             raise ValueError("Message is required")
 
-        if self.audience == "single":
-            if self.student_id is None:
-                raise ValueError("student_id is required for a single recipient")
-        elif self.audience == "custom":
-            if not self.student_ids:
-                raise ValueError("student_ids is required for a custom group")
+        if self.audience == "single" and self.student_id is None:
+            raise ValueError("student_id is required for a single recipient")
+        if self.audience == "custom" and not self.student_ids:
+            raise ValueError("student_ids is required for a custom group")
         return self
 
 

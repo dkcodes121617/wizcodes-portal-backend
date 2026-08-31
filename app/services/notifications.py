@@ -10,7 +10,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.models.notification import Notification
 from app.models.student import Student
-from app.schemas.notification import NotificationAudience, NotificationSendRequest
+from app.schemas.notification import NotificationSendRequest
 
 
 async def list_notifications_for_student(
