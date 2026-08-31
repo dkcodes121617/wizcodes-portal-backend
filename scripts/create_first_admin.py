@@ -40,7 +40,9 @@ def main() -> None:
         with conn.cursor() as cur:
             cur.execute("SELECT COUNT(*) FROM admins")
             if cur.fetchone()[0] > 0:
-                raise SystemExit("Admins already exist — use POST /api/v1/auth/admin/create instead.")
+                raise SystemExit(
+                    "Admins already exist — use POST /api/v1/auth/admin/create instead."
+                )
 
             cur.execute(
                 """

@@ -76,7 +76,10 @@ def main() -> int:
         conn.commit()
 
         print(f"\nCleared {len(to_clear)} table(s). schema_migrations was kept.")
-        print("Restart the backend to recreate the admin from ADMIN_EMAIL / ADMIN_PASSWORD in .env.")
+        print(
+            "Restart the backend to recreate the admin from "
+            "ADMIN_EMAIL / ADMIN_PASSWORD in .env."
+        )
     return 0
 
 
