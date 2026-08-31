@@ -23,6 +23,15 @@ def _clear_render_markers(monkeypatch: pytest.MonkeyPatch) -> None:
     monkeypatch.delenv("RENDER", raising=False)
     monkeypatch.delenv("RENDER_SERVICE_ID", raising=False)
     monkeypatch.delenv("RENDER_EXTERNAL_URL", raising=False)
+    monkeypatch.delenv("ADMIN_EMAIL", raising=False)
+    monkeypatch.delenv("ADMIN_PASSWORD", raising=False)
+
+
+def _simulate_render_production(monkeypatch: pytest.MonkeyPatch) -> None:
+    """Render implies production — include admin creds required by Settings."""
+    monkeypatch.setenv("RENDER", "true")
+    monkeypatch.setenv("ADMIN_EMAIL", "ci-admin@example.com")
+    monkeypatch.setenv("ADMIN_PASSWORD", "ci-test-password-8chars")
 
 
 def test_detects_development_off_render() -> None:
@@ -42,7 +51,7 @@ def test_development_enables_debug_and_reload() -> None:
 
 
 def test_production_disables_debug_and_reload(monkeypatch: pytest.MonkeyPatch) -> None:
-    monkeypatch.setenv("RENDER", "true")
+    _simulate_render_production(monkeypatch)
     settings = Settings()
     assert settings.is_production
     assert settings.DEBUG is False
@@ -50,7 +59,7 @@ def test_production_disables_debug_and_reload(monkeypatch: pytest.MonkeyPatch) -
 
 
 def test_production_requires_an_explicit_secret_key(monkeypatch: pytest.MonkeyPatch) -> None:
-    monkeypatch.setenv("RENDER", "true")
+    _simulate_render_production(monkeypatch)
     monkeypatch.delenv("SECRET_KEY", raising=False)
 
     with pytest.raises(ValidationError, match="SECRET_KEY"):
@@ -58,7 +67,7 @@ def test_production_requires_an_explicit_secret_key(monkeypatch: pytest.MonkeyPa
 
 
 def test_production_rejects_debug(monkeypatch: pytest.MonkeyPatch) -> None:
-    monkeypatch.setenv("RENDER", "true")
+    _simulate_render_production(monkeypatch)
     monkeypatch.setenv("DEBUG", "true")
 
     with pytest.raises(ValidationError, match="DEBUG"):
@@ -88,7 +97,7 @@ def test_keepalive_is_inert_locally() -> None:
 
 
 def test_keepalive_activates_on_render(monkeypatch: pytest.MonkeyPatch) -> None:
-    monkeypatch.setenv("RENDER", "true")
+    _simulate_render_production(monkeypatch)
     monkeypatch.setenv("RENDER_EXTERNAL_URL", "https://example.onrender.com/")
     settings = Settings()
 
@@ -99,7 +108,7 @@ def test_keepalive_activates_on_render(monkeypatch: pytest.MonkeyPatch) -> None:
 
 def test_render_external_url_wins_over_the_constant(monkeypatch: pytest.MonkeyPatch) -> None:
     """A renamed service must keep pinging itself, not the hardcoded default."""
-    monkeypatch.setenv("RENDER", "true")
+    _simulate_render_production(monkeypatch)
     monkeypatch.setenv("RENDER_EXTERNAL_URL", "https://renamed.onrender.com")
 
     assert Settings().PUBLIC_BASE_URL == "https://renamed.onrender.com"
@@ -107,7 +116,7 @@ def test_render_external_url_wins_over_the_constant(monkeypatch: pytest.MonkeyPa
 
 def test_keepalive_falls_back_to_the_known_url(monkeypatch: pytest.MonkeyPatch) -> None:
     """On Render without RENDER_EXTERNAL_URL, the deployed URL is assumed."""
-    monkeypatch.setenv("RENDER", "true")
+    _simulate_render_production(monkeypatch)
     settings = Settings()
 
     assert settings.PUBLIC_BASE_URL == PRODUCTION_BACKEND_URL
@@ -117,12 +126,12 @@ def test_keepalive_falls_back_to_the_known_url(monkeypatch: pytest.MonkeyPatch) 
 def test_frontend_url_follows_the_environment(monkeypatch: pytest.MonkeyPatch) -> None:
     assert Settings().FRONTEND_URL == LOCAL_FRONTEND_URL
 
-    monkeypatch.setenv("RENDER", "true")
+    _simulate_render_production(monkeypatch)
     assert Settings().FRONTEND_URL == PRODUCTION_FRONTEND_URL
 
 
 def test_explicit_frontend_url_wins(monkeypatch: pytest.MonkeyPatch) -> None:
-    monkeypatch.setenv("RENDER", "true")
+    _simulate_render_production(monkeypatch)
     monkeypatch.setenv("FRONTEND_URL", "https://portal.wizcodes.com/")
 
     # Explicit value used, trailing slash stripped.
