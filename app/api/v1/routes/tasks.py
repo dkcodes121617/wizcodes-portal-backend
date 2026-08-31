@@ -104,7 +104,7 @@ async def create_task(
         internship_plan_id=body.internship_plan_id,
         title=body.title,
         description=body.description,
-        github_link=body.github_link,
+        stack=body.stack,
     )
     session.add(task)
     try:
@@ -188,8 +188,8 @@ async def update_task(
         task.title = body.title
     if body.description is not None:
         task.description = body.description
-    if body.github_link is not None:
-        task.github_link = body.github_link
+    if body.stack is not None:
+        task.stack = body.stack
     if body.is_active is not None:
         task.is_active = body.is_active
 

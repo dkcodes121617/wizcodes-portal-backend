@@ -19,7 +19,7 @@ class AssignedTaskDetails(BaseModel):
 
     title: str
     description: str
-    github_link: str
+    stack: str
 
 
 class StudentTaskAssignmentResponse(BaseModel):
