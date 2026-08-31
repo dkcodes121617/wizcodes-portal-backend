@@ -1,7 +1,7 @@
 """Delete all application data while keeping the schema and migration history.
 
-    python scripts/clear_database.py
-    python scripts/clear_database.py --dry-run
+python scripts/clear_database.py
+python scripts/clear_database.py --dry-run
 """
 
 from __future__ import annotations
@@ -77,8 +77,7 @@ def main() -> int:
 
         print(f"\nCleared {len(to_clear)} table(s). schema_migrations was kept.")
         print(
-            "Restart the backend to recreate the admin from "
-            "ADMIN_EMAIL / ADMIN_PASSWORD in .env."
+            "Restart the backend to recreate the admin from ADMIN_EMAIL / ADMIN_PASSWORD in .env."
         )
     return 0
 

@@ -45,7 +45,4 @@ async def list_assignments_for_student(
         .where(StudentTaskAssignment.student_id == student_id)
         .order_by(StudentTaskAssignment.assigned_at.asc())
     )
-    return [
-        build_assignment_response(assignment, task)
-        for assignment, task in result.all()
-    ]
+    return [build_assignment_response(assignment, task) for assignment, task in result.all()]
