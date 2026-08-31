@@ -4,8 +4,18 @@ from app.db.base import Base
 from app.models.admin import Admin
 from app.models.domain import Domain
 from app.models.internship_plan import InternshipPlan
+from app.models.notification import Notification
 from app.models.student import Student
 from app.models.student_task_assignment import StudentTaskAssignment
 from app.models.task import Task
 
-__all__ = ["Admin", "Base", "Domain", "InternshipPlan", "Student", "StudentTaskAssignment", "Task"]
+__all__ = [
+    "Admin",
+    "Base",
+    "Domain",
+    "InternshipPlan",
+    "Notification",
+    "Student",
+    "StudentTaskAssignment",
+    "Task",
+]
