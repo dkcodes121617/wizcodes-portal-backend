@@ -5,6 +5,7 @@ from app.api.v1.routes import (
     admin_auth,
     admin_students,
     auth,
+    domains,
     health,
     internship_plans,
     students,
@@ -20,4 +21,5 @@ api_router.include_router(admin_students.router)
 api_router.include_router(admin_assignments.router)
 api_router.include_router(internship_plans.admin_router)
 api_router.include_router(internship_plans.public_router)
+api_router.include_router(domains.router)
 api_router.include_router(tasks.router)
