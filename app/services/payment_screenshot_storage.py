@@ -88,3 +88,25 @@ def delete_payment_screenshot(relative_path: str | None) -> None:
     path = resolve_payment_screenshot_path(relative_path)
     if path.is_file():
         path.unlink()
+
+
+_CONTENT_TYPE_BY_SUFFIX: dict[str, str] = {
+    ".jpg": "image/jpeg",
+    ".jpeg": "image/jpeg",
+    ".png": "image/png",
+    ".webp": "image/webp",
+    ".gif": "image/gif",
+}
+
+
+def payment_screenshot_media_type(relative_path: str) -> str:
+    suffix = Path(relative_path).suffix.lower()
+    return _CONTENT_TYPE_BY_SUFFIX.get(suffix, "application/octet-stream")
+
+
+def load_payment_screenshot_file(relative_path: str) -> Path:
+    """Return the on-disk path for a stored screenshot or raise PaymentScreenshotError."""
+    path = resolve_payment_screenshot_path(relative_path)
+    if not path.is_file():
+        raise PaymentScreenshotError("Payment screenshot file not found.")
+    return path

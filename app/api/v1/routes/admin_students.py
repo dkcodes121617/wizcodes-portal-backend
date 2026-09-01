@@ -6,6 +6,7 @@ import uuid
 from typing import Literal
 
 from fastapi import APIRouter, Depends, HTTPException, Query, status
+from fastapi.responses import FileResponse
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -18,6 +19,11 @@ from app.schemas.student_task_assignment import (
     ManualAssignRequest,
     ManualAssignTasksResponse,
     StudentTaskAssignmentResponse,
+)
+from app.services.payment_screenshot_storage import (
+    PaymentScreenshotError,
+    load_payment_screenshot_file,
+    payment_screenshot_media_type,
 )
 from app.services.student_tasks import list_assignments_for_student
 from app.services.task_assignment import (
@@ -44,6 +50,37 @@ async def _get_student_or_404(session: AsyncSession, student_id: uuid.UUID) -> S
             detail="Student not found",
         )
     return student
+
+
+@router.get(
+    "/{student_id}/payment-screenshot",
+    summary="Download a student's payment screenshot",
+    response_class=FileResponse,
+)
+async def get_student_payment_screenshot(
+    student_id: uuid.UUID,
+    session: AsyncSession = Depends(get_session),
+) -> FileResponse:
+    student = await _get_student_or_404(session, student_id)
+    if not student.payment_screenshot_url:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="No payment screenshot uploaded.",
+        )
+
+    try:
+        file_path = load_payment_screenshot_file(student.payment_screenshot_url)
+    except PaymentScreenshotError as exc:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=exc.message,
+        ) from exc
+
+    return FileResponse(
+        path=file_path,
+        media_type=payment_screenshot_media_type(student.payment_screenshot_url),
+        filename=file_path.name,
+    )
 
 
 @router.get(

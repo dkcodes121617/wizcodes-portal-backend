@@ -6,6 +6,7 @@ import uuid
 from datetime import UTC, datetime
 
 from fastapi import APIRouter, Depends, File, HTTPException, UploadFile, status
+from fastapi.responses import FileResponse
 from sqlalchemy import select, text
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -23,6 +24,8 @@ from app.schemas.student_task_assignment import (
 from app.services.payment_screenshot_storage import (
     PaymentScreenshotError,
     delete_payment_screenshot,
+    load_payment_screenshot_file,
+    payment_screenshot_media_type,
     save_payment_screenshot,
 )
 from app.services.student_tasks import build_assignment_response, list_assignments_for_student
@@ -94,6 +97,9 @@ async def enroll_student(
     student.chosen_duration_weeks = body.chosen_duration_weeks
     student.college = body.college
     student.year_of_study = body.year_of_study
+    student.certificate_name = body.certificate_name
+    student.internship_start_date = body.internship_start_date
+    student.internship_end_date = body.internship_end_date
 
     await session.commit()
     await session.refresh(student)
@@ -128,6 +134,35 @@ async def upload_payment_screenshot(
         delete_payment_screenshot(previous_path)
 
     return StudentResponse.model_validate(student)
+
+
+@router.get(
+    "/payment-screenshot",
+    summary="Download the current student's payment screenshot",
+    response_class=FileResponse,
+)
+async def get_payment_screenshot(
+    student: Student = Depends(get_current_student),
+) -> FileResponse:
+    if not student.payment_screenshot_url:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="No payment screenshot uploaded.",
+        )
+
+    try:
+        file_path = load_payment_screenshot_file(student.payment_screenshot_url)
+    except PaymentScreenshotError as exc:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=exc.message,
+        ) from exc
+
+    return FileResponse(
+        path=file_path,
+        media_type=payment_screenshot_media_type(student.payment_screenshot_url),
+        filename=file_path.name,
+    )
 
 
 @router.get(

@@ -7,8 +7,9 @@ payment screenshot and access status from A7.
 from __future__ import annotations
 
 import uuid
+from datetime import date
 
-from sqlalchemy import CheckConstraint, Integer, String, text
+from sqlalchemy import CheckConstraint, Date, Integer, String, text
 from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.orm import Mapped, mapped_column
 
@@ -42,6 +43,9 @@ class Student(Base, TimestampMixin):
     chosen_duration_weeks: Mapped[int | None] = mapped_column(Integer, nullable=True)
     college: Mapped[str | None] = mapped_column(String(255), nullable=True)
     year_of_study: Mapped[str | None] = mapped_column(String(64), nullable=True)
+    certificate_name: Mapped[str | None] = mapped_column(String(255), nullable=True)
+    internship_start_date: Mapped[date | None] = mapped_column(Date, nullable=True)
+    internship_end_date: Mapped[date | None] = mapped_column(Date, nullable=True)
     payment_screenshot_url: Mapped[str | None] = mapped_column(String(512), nullable=True)
     access_status: Mapped[str] = mapped_column(
         String(32),
