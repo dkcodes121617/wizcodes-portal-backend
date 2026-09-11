@@ -64,7 +64,10 @@ async def save_payment_screenshot(
     while chunk := await upload.read(1024 * 1024):
         total_size += len(chunk)
         if total_size > active_settings.PAYMENT_SCREENSHOT_MAX_BYTES:
-            raise PaymentScreenshotError("Payment screenshot must be 10 MB or smaller.")
+            max_kb = active_settings.PAYMENT_SCREENSHOT_MAX_BYTES // 1024
+            raise PaymentScreenshotError(
+                f"Payment screenshot must be {max_kb} KB or smaller.",
+            )
         chunks.append(chunk)
 
     if total_size == 0:

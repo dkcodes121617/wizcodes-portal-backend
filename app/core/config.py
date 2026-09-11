@@ -121,7 +121,7 @@ class Settings(BaseSettings):
 
     # --- local file uploads (payment screenshots; swap internals for S3 later) ---
     PAYMENT_SCREENSHOT_UPLOAD_DIR: str = "uploads/payment-screenshots"
-    PAYMENT_SCREENSHOT_MAX_BYTES: int = 10 * 1024 * 1024  # 10 MB
+    PAYMENT_SCREENSHOT_MAX_BYTES: int = 500 * 1024  # 500 KB
 
     # --- bootstrap admin (login email + password; synced on startup) ---
     ADMIN_NAME: str = "Admin"

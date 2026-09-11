@@ -30,6 +30,7 @@ class StudentSignupRequest(BaseModel):
     email: str | None = None
     phone: str | None = Field(default=None, max_length=32)
     password: str = Field(min_length=8, max_length=128)
+    accepted_terms: bool
 
     @field_validator("email")
     @classmethod
@@ -55,12 +56,21 @@ class StudentSignupRequest(BaseModel):
     def require_email_or_phone(self) -> StudentSignupRequest:
         if not self.email and not self.phone:
             raise ValueError("At least one of email or phone is required")
+        if not self.accepted_terms:
+            raise ValueError("You must accept the Terms & Conditions to continue")
         return self
 
 
 class StudentLoginRequest(BaseModel):
     identifier: str = Field(min_length=1, max_length=320)
     password: str = Field(min_length=1, max_length=128)
+    accepted_terms: bool
+
+    @model_validator(mode="after")
+    def require_terms_acceptance(self) -> StudentLoginRequest:
+        if not self.accepted_terms:
+            raise ValueError("You must accept the Terms & Conditions to continue")
+        return self
 
     @property
     def lookup_email(self) -> str | None:
