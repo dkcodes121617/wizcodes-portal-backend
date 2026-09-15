@@ -1,6 +1,4 @@
 # --- secrets: never commit ---
-.env
-.env.*
 !.env.example
 
 # --- virtualenvs ---
@@ -40,8 +38,9 @@ uploads/
 
 # --- editors / OS ---
 .idea/
-.vscode/
 *.swp
 .DS_Store
 Thumbs.db
 desktop.ini
+config.bat
+node_modules

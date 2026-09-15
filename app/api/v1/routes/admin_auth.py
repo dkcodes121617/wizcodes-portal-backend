@@ -57,6 +57,19 @@ async def admin_me(
     return AdminResponse.model_validate(admin)
 
 
+@router.get(
+    "/admins",
+    response_model=list[AdminResponse],
+    summary="List all admin accounts (super_admin only)",
+)
+async def list_admins(
+    _: Admin = Depends(get_current_super_admin),
+    session: AsyncSession = Depends(get_session),
+) -> list[AdminResponse]:
+    result = await session.execute(select(Admin).order_by(Admin.created_at.asc()))
+    return [AdminResponse.model_validate(row) for row in result.scalars().all()]
+
+
 @router.post(
     "/create",
     response_model=AdminResponse,
